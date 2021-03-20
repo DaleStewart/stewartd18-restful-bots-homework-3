@@ -1,6 +1,8 @@
 package edu.ecu.cs.seng6285.restfulbots.datastore;
 
 import com.google.cloud.datastore.*;
+import com.google.cloud.datastore.StructuredQuery.PropertyFilter;
+
 import edu.ecu.cs.seng6285.restfulbots.models.Textbook;
 import org.springframework.stereotype.Service;
 
@@ -37,13 +39,12 @@ public class TextbookService {
     }
 
     public List<Textbook> getAllTextbooksForSubject(String subject) {
-        // TODO: What code needs to be added here to retrieve textbooks for a given subject?
-        // HINT: Look at the lab we did on Datastore, we need to filter our results. You need
-        // to do this filtering in the query, you CANNOT just grab everything and then filter
-        // it here using Java code.
-
-        // TODO: Remove this return statement once you have something valid to return
-        return Collections.emptyList();
+    	Query<Entity> query = Query.newEntityQueryBuilder()
+                .setKind(ENTITY_KIND)
+                .setFilter(PropertyFilter.eq("SUBJECT", subject))//not sure about the "SUBJECT" part, maybe different name? 
+                .build();
+        Iterator<Entity> entities = datastore.run(query);
+        return buildTextbooks(entities);
     }
 
     private List<Textbook> buildTextbooks(Iterator<Entity> entities) {

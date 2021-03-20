@@ -1,6 +1,8 @@
 package edu.ecu.cs.seng6285.restfulbots.datastore;
 
 import com.google.cloud.datastore.*;
+import com.google.cloud.datastore.Entity.Builder;
+
 import edu.ecu.cs.seng6285.restfulbots.models.Subject;
 import org.springframework.stereotype.Service;
 
@@ -16,17 +18,32 @@ public class SubjectService {
     private final KeyFactory keyFactory = datastore.newKeyFactory().setKind(ENTITY_KIND);
 
     public Key createSubject(Subject subject) {
-        // TODO: What code needs to be added here to create a subject?
-        return null;
+       Key key = datastore.allocateId(keyFactory.newKey());
+       Entity subjectEntity = Entity.newBuilder(key)
+    		   .set(Subject.SUBJECT_NAME, subject.getSubjectName())
+    		   .build();
+       datastore.put(subjectEntity);
+        return key;
     }
 
     public List<Subject> getAllSubjects() {
-        // TODO: What code needs to be added here to retrieve all subjects?
+        Query<Entity> query = Query.newEntityQueryBuilder()
+        		.setKind(ENTITY_KIND)
+        		.build();
 
-        // TODO: Remove this return statement once you have something valid to return
-        return Collections.emptyList();
+        Iterator<Entity> entities = datastore.run(query);
+        return buildSubjects(entities);
     }
 
-    // TODO: What support methods are needed here?
-    // Feel free to look at the other service classes for inspiration.
+	private List<Subject> buildSubjects(Iterator<Entity> entities) {
+		List<Subject> subjects = new ArrayList<>();
+		entities.forEachRemaining(entity -> subjects.add(entityToSubject(entity)));
+		return subjects;
+	}
+
+	private Subject entityToSubject(Entity entity) {
+		return new Subject.Builder()
+                .withSubjectName(entity.getString(Subject.SUBJECT_NAME))
+                .build();
+	}
 }

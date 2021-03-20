@@ -2,6 +2,8 @@ package edu.ecu.cs.seng6285.restfulbots.api;
 
 import edu.ecu.cs.seng6285.restfulbots.datastore.SubjectService;
 import edu.ecu.cs.seng6285.restfulbots.models.Subject;
+import edu.ecu.cs.seng6285.restfulbots.models.Textbook;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +24,7 @@ public class SubjectEndpoint {
         // TODO: What code is needed here to return all subjects?
 
         // TODO: You can remove this return statement once you are returning something valid.
-        return Collections.emptyList();
+        return subjectService.getAllSubjects();
     }
 
     @GetMapping(value = "/init")
@@ -35,7 +37,9 @@ public class SubjectEndpoint {
         subjects.add(new Subject.Builder().withSubjectName("English").build());
         subjects.add(new Subject.Builder().withSubjectName("History").build());
 
-        // TODO: Is something missing here? If so, add the missing code...
+        for (Subject s : subjects) {
+        	subjectService.createSubject(s);
+        }
 
         return true;
     }
